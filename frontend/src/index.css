@@ -36,3 +36,13 @@ main {
 .product-info {
   padding: 1rem;
 }
+
+.reviews {
+  padding-left: 2%;
+}
+
+.img-large {
+  padding-top: 5%;
+  max-width: 70%;
+  max-height: 100%;
+}

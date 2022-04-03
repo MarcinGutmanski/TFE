@@ -25,7 +25,7 @@ const data = {
       category: 'Figurine',
       image: '/images/bear.jpg',
       price: 3,
-      countInStock: 5,
+      countInStock: 0,
       rating: 4.6,
       numReviews: 17,
       description: "Figurine d'ours en epoxy",
