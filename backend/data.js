@@ -1,9 +1,7 @@
 const data = {
   products: [
     {
-      _id: '1',
       name: 'Cochon en epoxy',
-      category: 'Figurine',
       image: '/images/cochon.jpg',
       price: 3,
       countInStock: 5,
@@ -12,9 +10,7 @@ const data = {
       description: 'Figurine de cochon en epoxy',
     },
     {
-      _id: '2',
       name: 'Cerf en epoxy',
-      category: 'Figurine',
       image: '/images/deer.jpg',
       price: 3,
       countInStock: 5,
@@ -23,9 +19,7 @@ const data = {
       description: 'Figurine de cerf en epoxy',
     },
     {
-      _id: '3',
       name: 'Ours en epoxy',
-      category: 'Figurine',
       image: '/images/bear.jpg',
       price: 3,
       countInStock: 0,
@@ -34,9 +28,7 @@ const data = {
       description: "Figurine d'ours en epoxy",
     },
     {
-      _id: '4',
       name: 'Bulldog en epoxy',
-      category: 'Figurine',
       image: '/images/bulldog.jpg',
       price: 3,
       countInStock: 5,
@@ -45,9 +37,7 @@ const data = {
       description: 'Figurine de bulldog en epoxy',
     },
     {
-      _id: '5',
       name: 'Licorne en epoxy',
-      category: 'Figurine',
       image: '/images/unicorn.jpg',
       price: 3,
       countInStock: 5,
@@ -56,9 +46,7 @@ const data = {
       description: 'Figurine de licorne en epoxy',
     },
     {
-      _id: '6',
       name: 'Chat en epoxy',
-      category: 'Figurine',
       image: '/images/cat.jpg',
       price: 3,
       countInStock: 5,
@@ -67,9 +55,7 @@ const data = {
       description: 'Figurine de chat en epoxy',
     },
     {
-      _id: '7',
       name: 'Loup en epoxy',
-      category: 'Figurine',
       image: '/images/wolf.jpg',
       price: 3,
       countInStock: 5,
