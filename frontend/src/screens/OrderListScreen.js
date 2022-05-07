@@ -35,7 +35,7 @@ export default function OrderHistoryScreen() {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
       try {
-        const { data } = await axios.get('/api/orders/mine', {
+        const { data } = await axios.get('/api/orders/admin', {
           headers: { authorization: `Bearer ${userInfo.token}` },
         });
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
@@ -52,9 +52,9 @@ export default function OrderHistoryScreen() {
   return (
     <div>
       <Helmet>
-        <title>Order History</title>
+        <title>Orders</title>
       </Helmet>
-      <h1 className="my-3">Order History</h1>
+      <h1 className="my-3">Orders</h1>
       {loading ? (
         <LoadingBox></LoadingBox>
       ) : error ? (
@@ -87,7 +87,10 @@ export default function OrderHistoryScreen() {
                   <Button>
                     <Link
                       to={`/order/${order._id}`}
-                      style={{ textDecoration: 'none', color: '#FFFFFF' }}
+                      style={{
+                        textDecoration: 'none',
+                        color: '#FFFFFF',
+                      }}
                     >
                       <Card.Title style={{ fontSize: '16px' }}>
                         Details

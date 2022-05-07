@@ -86,8 +86,8 @@ export default function SearchScreen() {
   useEffect(() => {
     const fecthCategories = async () => {
       try {
-        // const { data } = await axios.get(`/api/products/categories`);
-        setCategories(['Test', 'Test1']);
+        const { data } = await axios.get(`/api/products/categories`);
+        setCategories(data);
       } catch (err) {
         toast.error(getError(err));
       }

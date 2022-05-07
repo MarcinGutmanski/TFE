@@ -11,7 +11,11 @@ import OrderScreen from './screens/OrderScreen';
 import OrderHistoryScreen from './screens/OrderHistoryScreen';
 import UserProfileScreen from './screens/UserProfileScreen';
 import SearchScreen from './screens/SearchScreen';
+import ProductListScreen from './screens/ProductListScreen';
+import OrderListScreen from './screens/OrderListScreen';
+import UserListScreen from './screens/UserListScreen';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdminRoute from './components/AdminRoute';
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -19,11 +23,8 @@ import Nav from 'react-bootstrap/Nav';
 import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState } from 'react';
 import { Store } from './Store';
-// import axios from 'axios';
-import { getError } from './utils.js';
-import { toast } from 'react-toastify';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -42,19 +43,6 @@ function App() {
   };
 
   const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
-  const [categories, setCategories] = useState([]);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        // const { data } = await axios.get(`/api/products/categories`);
-        setCategories(['Test', 'Test1']);
-      } catch (err) {
-        toast.error(getError(err));
-      }
-    };
-    fetchCategories();
-  }, []);
 
   return (
     <BrowserRouter>
@@ -112,35 +100,28 @@ function App() {
                       Sign In
                     </Link>
                   )}
+                  {/* && userInfo.isAdmin */}
+                  {userInfo && (
+                    <NavDropdown title="Admin" id="admin-nav-dropdown">
+                      <LinkContainer to="/admin/productList">
+                        <NavDropdown.Item>Products</NavDropdown.Item>
+                      </LinkContainer>
+                      <LinkContainer to="/admin/orderList">
+                        <NavDropdown.Item>Orders</NavDropdown.Item>
+                      </LinkContainer>
+                      <LinkContainer to="/admin/userList">
+                        <NavDropdown.Item>Users</NavDropdown.Item>
+                      </LinkContainer>
+                      <LinkContainer to="/admin/forms">
+                        <NavDropdown.Item>Forms</NavDropdown.Item>
+                      </LinkContainer>
+                    </NavDropdown>
+                  )}
                 </Nav>
               </Navbar.Collapse>
             </Container>
           </Navbar>
         </header>
-        <div
-          className={
-            sidebarIsOpen
-              ? 'active-nav side-navbar d-flex justfy-content-between flew-wrap flew-column'
-              : 'side-navbar d-flex justify-content-between flex-wrap flex-column'
-          }
-        >
-          <Nav className="flex-column text-white w-100 p-2">
-            <Nav.Item>
-              <strong>Categories</strong>
-            </Nav.Item>
-            {categories.map((category) => (
-              <Nav.Item key={category}>
-                <LinkContainer
-                  to={`/search?category=${category}`}
-                  onClick={() => setSidebarIsOpen(false)}
-                >
-                  <Nav.Link>{category}</Nav.Link>
-                </LinkContainer>
-              </Nav.Item>
-            ))}
-          </Nav>
-          >
-        </div>
         <main>
           <Container className="mt-3">
             <Routes>
@@ -176,6 +157,32 @@ function App() {
                 }
               />
               <Route path="/search" element={<SearchScreen />} />
+              {/* Admin Routes */}
+              <Route
+                path="/admin/productList"
+                element={
+                  <AdminRoute>
+                    <ProductListScreen />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/orderList"
+                element={
+                  <AdminRoute>
+                    <OrderListScreen />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/userList"
+                element={
+                  <AdminRoute>
+                    <UserListScreen />
+                  </AdminRoute>
+                }
+              />
+              {/* Parrainé Routes */}
               <Route path="/" element={<HomeScreen />} />
             </Routes>
           </Container>

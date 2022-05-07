@@ -37,6 +37,15 @@ orderRouter.get(
   })
 );
 
+orderRouter.get('/admin', async (req, res) => {
+  const orders = await Order.find();
+  if (orders) {
+    res.send(orders);
+  } else {
+    res.status(404).send({ message: 'Ther is no order' });
+  }
+});
+
 orderRouter.get(
   '/order/:id',
   isAuth,

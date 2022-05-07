@@ -69,4 +69,37 @@ userRouter.put(
   })
 );
 
+userRouter.get('/admin', async (req, res) => {
+  const users = await User.find();
+  if (users) {
+    res.send(users);
+  } else {
+    res.status(404).send({ message: 'Users not found.' });
+  }
+});
+
+userRouter.put(
+  '/profile/:id',
+  expressAsyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id);
+    if (user) {
+      user.name = req.body.name || user.name;
+      user.email = req.body.email || user.email;
+      if (req.body.password) {
+        user.password = bcrypt.hashSync(req.body.password, 8);
+      }
+
+      const updatedUser = await user.save();
+      res.send({
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        token: generateToken(updatedUser),
+      });
+    } else {
+      res.status(404).send({ message: 'User not found' });
+    }
+  })
+);
+
 export default userRouter;

@@ -14,7 +14,7 @@ function reducer(state, action) {
     case 'FETCH_REQUEST':
       return { ...state, loading: true, error: '' };
     case 'FETCH_SUCCESS':
-      return { ...state, loading: false, orders: action.payload, error: '' };
+      return { ...state, loading: false, users: action.payload, error: '' };
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
     default:
@@ -26,7 +26,7 @@ export default function OrderHistoryScreen() {
   const { state } = useContext(Store);
   const { userInfo } = state;
 
-  const [{ loading, error, orders }, dispatch] = useReducer(reducer, {
+  const [{ loading, error, users }, dispatch] = useReducer(reducer, {
     loading: true,
     error: '',
   });
@@ -35,7 +35,7 @@ export default function OrderHistoryScreen() {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
       try {
-        const { data } = await axios.get('/api/orders/mine', {
+        const { data } = await axios.get('/api/users/admin', {
           headers: { authorization: `Bearer ${userInfo.token}` },
         });
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
@@ -52,9 +52,9 @@ export default function OrderHistoryScreen() {
   return (
     <div>
       <Helmet>
-        <title>Order History</title>
+        <title>Users</title>
       </Helmet>
-      <h1 className="my-3">Order History</h1>
+      <h1 className="my-3">Users</h1>
       {loading ? (
         <LoadingBox></LoadingBox>
       ) : error ? (
@@ -64,35 +64,31 @@ export default function OrderHistoryScreen() {
           <thead>
             <tr>
               <th>Id</th>
-              <th>Date</th>
-              <th>Total</th>
-              <th>Paid</th>
-              <th>Delivered</th>
-              <th>Actions</th>
+              <th>Name</th>
+              <th>Role</th>
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => (
-              <tr key={order._id}>
-                <td>{order._id}</td>
-                <td>{order.createdAt.substring(0, 10)}</td>
-                <td>{order.totalPrice.toFixed(2)}</td>
-                <td>{order.isPaid ? order.paidAt.substring(0, 10) : 'No'}</td>
-                <td>
-                  {order.isDelivered
-                    ? order.deliveredAt.substring(0, 10)
-                    : 'No'}
-                </td>
+            {users.map((user) => (
+              <tr key={user._id}>
+                <td>{user._id}</td>
+                <td>{user.name}</td>
+                <td>TODO</td>
                 <td>
                   <Button>
                     <Link
-                      to={`/order/${order._id}`}
+                      to={`/users/${user._id}`}
                       style={{ textDecoration: 'none', color: '#FFFFFF' }}
                     >
                       <Card.Title style={{ fontSize: '16px' }}>
-                        Details
+                        User Info
                       </Card.Title>
                     </Link>
+                  </Button>
+                </td>
+                <td>
+                  <Button variant="light">
+                    <i className="fas fa-trash"></i>
                   </Button>
                 </td>
               </tr>

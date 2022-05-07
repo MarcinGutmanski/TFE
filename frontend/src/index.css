@@ -47,8 +47,13 @@ main {
   max-height: 100%;
 }
 
+.card-img-top {
+  min-height: 350px;
+}
+
 .img-thumbnail {
   height: 80px;
+  max-width: 62.5px;
 }
 
 .small-container {

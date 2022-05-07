@@ -98,6 +98,24 @@ productRouter.get('/name/:name', async (req, res) => {
   }
 });
 
+productRouter.get(
+  '/categories',
+  expressAsyncHandler(async (req, res) => {
+    const categories = await Product.find().distinct('category');
+    res.send(categories);
+    console.log('test');
+  })
+);
+
+productRouter.get('/admin', async (req, res) => {
+  const products = await Product.find();
+  if (products) {
+    res.send(products);
+  } else {
+    res.status(404).send({ message: 'Products not found.' });
+  }
+});
+
 productRouter.get('/:id', async (req, res) => {
   const product = await Product.findById(req.params.id);
   if (product) {
