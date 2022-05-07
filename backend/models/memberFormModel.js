@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const formSchema = new mongoose.Schema(
+const memberFormSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true },
@@ -12,6 +12,6 @@ const formSchema = new mongoose.Schema(
   }
 );
 
-const Form = mongoose.model('Form', formSchema);
+const MemberForm = mongoose.model('MemberForm', memberFormSchema);
 
-export default Form;
+export default MemberForm;

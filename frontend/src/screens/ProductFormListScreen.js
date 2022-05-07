@@ -22,7 +22,7 @@ function reducer(state, action) {
   }
 }
 
-export default function MemberFormListScreen() {
+export default function ProductFormListScreen() {
   const { state } = useContext(Store);
   const { userInfo } = state;
 
@@ -35,7 +35,7 @@ export default function MemberFormListScreen() {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
       try {
-        const { data } = await axios.get('/api/forms/admin/member', {
+        const { data } = await axios.get('/api/forms/admin/product', {
           headers: { authorization: `Bearer ${userInfo.token}` },
         });
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
@@ -52,9 +52,9 @@ export default function MemberFormListScreen() {
   return (
     <div>
       <Helmet>
-        <title>Member Forms</title>
+        <title>Product Forms</title>
       </Helmet>
-      <h1 className="my-3">Member Forms</h1>
+      <h1 className="my-3">Product Forms</h1>
       {loading ? (
         <LoadingBox></LoadingBox>
       ) : error ? (
@@ -65,7 +65,9 @@ export default function MemberFormListScreen() {
             <tr>
               <th>Id</th>
               <th>Name</th>
-              <th>Email</th>
+              <th>Price</th>
+              <th>Quantity</th>
+              <th>Category</th>
               <th>Accepted</th>
             </tr>
           </thead>
@@ -74,16 +76,15 @@ export default function MemberFormListScreen() {
               <tr key={form._id}>
                 <td>{form._id}</td>
                 <td>{form.name}</td>
-                <td>{form.email}</td>
+                <td>{form.price}€</td>
+                <td>{form.quantity}</td>
+                <td>{form.category}</td>
                 <td>{form.isAccepted ? 'Yes' : 'No'}</td>
                 <td>
                   <Button>
                     <Link
-                      to={`/forms/${form._id}`}
-                      style={{
-                        textDecoration: 'none',
-                        color: '#FFFFFF',
-                      }}
+                      to={`/products/${form._id}`}
+                      style={{ textDecoration: 'none', color: '#FFFFFF' }}
                     >
                       <Card.Title style={{ fontSize: '16px' }}>
                         Details

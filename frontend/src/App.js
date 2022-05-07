@@ -16,6 +16,9 @@ import OrderListScreen from './screens/OrderListScreen';
 import UserListScreen from './screens/UserListScreen';
 import MemberFormScreen from './screens/MemberFormScreen';
 import MemberFormListScreen from './screens/MemberFormListScreen';
+import ProductAddScreen from './screens/ProductAddScreen';
+import ProductFormScreen from './screens/ProductFormScreen';
+import ProductFormListScreen from './screens/ProductFormListScreen';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import Navbar from 'react-bootstrap/Navbar';
@@ -23,9 +26,8 @@ import Container from 'react-bootstrap/Container';
 import { LinkContainer } from 'react-router-bootstrap';
 import Nav from 'react-bootstrap/Nav';
 import Badge from 'react-bootstrap/Badge';
-import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { Store } from './Store';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import { ToastContainer } from 'react-toastify';
@@ -44,37 +46,27 @@ function App() {
     window.location.href = '/signin';
   };
 
-  const [sidebarIsOpen, setSidebarIsOpen] = useState(false);
-
   return (
     <BrowserRouter>
-      <div
-        className={
-          sidebarIsOpen
-            ? 'd-flex flex-column site-container active-cont'
-            : 'd-flex flex-column site-container'
-        }
-      >
+      <div>
         <ToastContainer position="bottom-center" limit={1} />
         <header>
           <Navbar bg="dark" variant="dark" expand="lg">
             <Container>
-              <Button
-                variant="dark"
-                onClick={() => setSidebarIsOpen(!sidebarIsOpen)}
-              >
-                <i className="fas fa-bars"></i>
-              </Button>
               <LinkContainer to="/">
                 <Navbar.Brand>Créamates</Navbar.Brand>
               </LinkContainer>
-              <Navbar.Toggle aria-controls="basic-navbar-nav" />
               <Navbar.Collapse id="basic-navbar-nav">
                 <SearchBox />
                 <Nav className="me-auto w-100 justify-content-end">
                   {userInfo && (
                     <Link to="/memberForm" className="nav-link">
                       Become a member
+                    </Link>
+                  )}
+                  {userInfo && (
+                    <Link to="/productForm" className="nav-link">
+                      Add a product
                     </Link>
                   )}
                   <Link to="/basket" className="nav-link">
@@ -208,7 +200,31 @@ function App() {
                   </AdminRoute>
                 }
               />
+              <Route
+                path="/admin/productForms"
+                element={
+                  <AdminRoute>
+                    <ProductFormListScreen />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/products/add"
+                element={
+                  <AdminRoute>
+                    <ProductAddScreen />
+                  </AdminRoute>
+                }
+              />
               {/* Parrainé Routes */}
+              <Route
+                path="/productForm"
+                element={
+                  <AdminRoute>
+                    <ProductFormScreen />
+                  </AdminRoute>
+                }
+              />
               <Route path="/" element={<HomeScreen />} />
             </Routes>
           </Container>

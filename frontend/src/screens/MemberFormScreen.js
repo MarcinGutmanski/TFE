@@ -46,7 +46,7 @@ export default function MemberFormScreen() {
           <Form.Label>Email</Form.Label>
           <Form.Control type="email" value={email} disabled />
         </Form.Group>
-        <Form.Group className="mb-3" controlId="password">
+        <Form.Group className="mb-3" controlId="description">
           <Form.Label>
             What kind of products would you sell as a member?
           </Form.Label>

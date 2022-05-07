@@ -103,7 +103,7 @@ productRouter.get(
   expressAsyncHandler(async (req, res) => {
     const categories = await Product.find().distinct('category');
     res.send(categories);
-    console.log('test');
+    console.log(categories);
   })
 );
 
@@ -113,6 +113,25 @@ productRouter.get('/admin', async (req, res) => {
     res.send(products);
   } else {
     res.status(404).send({ message: 'Products not found.' });
+  }
+});
+
+productRouter.post('/add', async (req, res) => {
+  console.log(req.body);
+  const newProduct = new Product({
+    name: req.body.name,
+    price: req.body.price,
+    countInStock: req.body.quantity,
+    description: req.body.description,
+    category: req.body.category,
+    rating: 0,
+    numReviews: 0,
+    image: '/images/image-not-found.png',
+  });
+  const product = await newProduct.save();
+
+  if (product) {
+    res.send(product);
   }
 });
 

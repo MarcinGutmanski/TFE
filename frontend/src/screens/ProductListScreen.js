@@ -54,7 +54,17 @@ export default function ProductListScreen() {
       <Helmet>
         <title>Products</title>
       </Helmet>
-      <h1 className="my-3">Products</h1>
+      <div>
+        <h1 className="my-3">Products </h1>
+        <Button>
+          <Link
+            to={`/products/add`}
+            style={{ textDecoration: 'none', color: '#FFFFFF' }}
+          >
+            <Card.Title style={{ fontSize: '16px' }}>Add product</Card.Title>
+          </Link>
+        </Button>
+      </div>
       {loading ? (
         <LoadingBox></LoadingBox>
       ) : error ? (
