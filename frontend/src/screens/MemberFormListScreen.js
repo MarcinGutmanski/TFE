@@ -14,7 +14,7 @@ function reducer(state, action) {
     case 'FETCH_REQUEST':
       return { ...state, loading: true, error: '' };
     case 'FETCH_SUCCESS':
-      return { ...state, loading: false, products: action.payload, error: '' };
+      return { ...state, loading: false, forms: action.payload, error: '' };
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
     default:
@@ -22,11 +22,11 @@ function reducer(state, action) {
   }
 }
 
-export default function ProductListScreen() {
+export default function MemberFormListScreen() {
   const { state } = useContext(Store);
   const { userInfo } = state;
 
-  const [{ loading, error, products }, dispatch] = useReducer(reducer, {
+  const [{ loading, error, forms }, dispatch] = useReducer(reducer, {
     loading: true,
     error: '',
   });
@@ -35,7 +35,7 @@ export default function ProductListScreen() {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
       try {
-        const { data } = await axios.get('/api/products/admin', {
+        const { data } = await axios.get('/api/forms/admin', {
           headers: { authorization: `Bearer ${userInfo.token}` },
         });
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
@@ -52,9 +52,9 @@ export default function ProductListScreen() {
   return (
     <div>
       <Helmet>
-        <title>Products</title>
+        <title>Member Forms</title>
       </Helmet>
-      <h1 className="my-3">Products</h1>
+      <h1 className="my-3">Member Forms</h1>
       {loading ? (
         <LoadingBox></LoadingBox>
       ) : error ? (
@@ -65,32 +65,30 @@ export default function ProductListScreen() {
             <tr>
               <th>Id</th>
               <th>Name</th>
-              <th>Price</th>
-              <th>Quantity</th>
+              <th>Email</th>
+              <th>Accepted</th>
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr key={product._id}>
-                <td>{product._id}</td>
-                <td>{product.name}</td>
-                <td>{product.price.toFixed(2)}€</td>
-                <td>{product.countInStock}</td>
+            {forms.map((form) => (
+              <tr key={form._id}>
+                <td>{form._id}</td>
+                <td>{form.name}</td>
+                <td>{form.email}</td>
+                <td>{form.isAccepted ? 'Yes' : 'No'}</td>
                 <td>
                   <Button>
                     <Link
-                      to={`/product/${product.name}`}
-                      style={{ textDecoration: 'none', color: '#FFFFFF' }}
+                      to={`/forms/${form._id}`}
+                      style={{
+                        textDecoration: 'none',
+                        color: '#FFFFFF',
+                      }}
                     >
                       <Card.Title style={{ fontSize: '16px' }}>
                         Details
                       </Card.Title>
                     </Link>
-                  </Button>
-                </td>
-                <td>
-                  <Button variant="light">
-                    <i className="fas fa-trash"></i>
                   </Button>
                 </td>
               </tr>

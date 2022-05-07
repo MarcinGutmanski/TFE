@@ -14,6 +14,8 @@ import SearchScreen from './screens/SearchScreen';
 import ProductListScreen from './screens/ProductListScreen';
 import OrderListScreen from './screens/OrderListScreen';
 import UserListScreen from './screens/UserListScreen';
+import MemberFormScreen from './screens/MemberFormScreen';
+import MemberFormListScreen from './screens/MemberFormListScreen';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import Navbar from 'react-bootstrap/Navbar';
@@ -70,6 +72,11 @@ function App() {
               <Navbar.Collapse id="basic-navbar-nav">
                 <SearchBox />
                 <Nav className="me-auto w-100 justify-content-end">
+                  {userInfo && (
+                    <Link to="/memberForm" className="nav-link">
+                      Become a member
+                    </Link>
+                  )}
                   <Link to="/basket" className="nav-link">
                     Basket
                     {basket.basketItems.length > 0 && (
@@ -112,8 +119,11 @@ function App() {
                       <LinkContainer to="/admin/userList">
                         <NavDropdown.Item>Users</NavDropdown.Item>
                       </LinkContainer>
-                      <LinkContainer to="/admin/forms">
-                        <NavDropdown.Item>Forms</NavDropdown.Item>
+                      <LinkContainer to="/admin/memberForms">
+                        <NavDropdown.Item>Member Forms</NavDropdown.Item>
+                      </LinkContainer>
+                      <LinkContainer to="/admin/productForms">
+                        <NavDropdown.Item>Product Forms</NavDropdown.Item>
                       </LinkContainer>
                     </NavDropdown>
                   )}
@@ -156,6 +166,14 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/memberForm"
+                element={
+                  <ProtectedRoute>
+                    <MemberFormScreen />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/search" element={<SearchScreen />} />
               {/* Admin Routes */}
               <Route
@@ -179,6 +197,14 @@ function App() {
                 element={
                   <AdminRoute>
                     <UserListScreen />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/memberForms"
+                element={
+                  <AdminRoute>
+                    <MemberFormListScreen />
                   </AdminRoute>
                 }
               />

@@ -22,7 +22,7 @@ function reducer(state, action) {
   }
 }
 
-export default function OrderHistoryScreen() {
+export default function UserListScreen() {
   const { state } = useContext(Store);
   const { userInfo } = state;
 
