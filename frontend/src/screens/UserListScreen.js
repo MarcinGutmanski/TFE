@@ -55,7 +55,7 @@ export default function UserListScreen() {
       await axios.delete(`/api/users/${e.target.value}`, {
         headers: { authorization: `Bearer ${userInfo.token}` },
       });
-      toast.success('User deleted succesfully!');
+      window.location.reload(false);
     } catch (err) {
       toast.error(getError(err));
     }
