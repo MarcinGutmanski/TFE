@@ -135,10 +135,47 @@ productRouter.post('/add', async (req, res) => {
   }
 });
 
+productRouter.post('/addFromForm', async (req, res) => {
+  console.log(req.body);
+  const newProduct = new Product({
+    name: req.body.name,
+    price: req.body.price,
+    countInStock: req.body.quantity,
+    description: req.body.description,
+    category: req.body.category,
+    rating: 0,
+    numReviews: 0,
+    image: '/images/image-not-found.png',
+  });
+  const product = await newProduct.save();
+
+  if (product) {
+    res.send(product);
+  }
+});
+
 productRouter.get('/:id', async (req, res) => {
   const product = await Product.findById(req.params.id);
   if (product) {
     res.send(product);
+  } else {
+    res.status(404).send({ message: 'Product not found.' });
+  }
+});
+
+productRouter.post('/rate/:id', async (req, res) => {
+  const product = await Product.findById(req.params.id);
+  if (product) {
+    const total = product.numReviews * product.rating;
+    const newRating =
+      (total + parseInt(req.body.rating)) / (product.numReviews + 1);
+    const updatedProduct = await product.set({
+      numReviews: product.numReviews + 1,
+      rating: newRating,
+    });
+    await updatedProduct.save();
+    console.log(updatedProduct);
+    res.send(updatedProduct);
   } else {
     res.status(404).send({ message: 'Product not found.' });
   }

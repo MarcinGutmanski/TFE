@@ -8,6 +8,7 @@ import { getError } from '../utils.js';
 import { Link } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
+import { toast } from 'react-toastify';
 
 function reducer(state, action) {
   switch (action.type) {
@@ -49,6 +50,17 @@ export default function UserListScreen() {
     fetchData();
   }, [userInfo]);
 
+  const deleteUserHandler = async (e) => {
+    try {
+      await axios.delete(`/api/users/${e.target.value}`, {
+        headers: { authorization: `Bearer ${userInfo.token}` },
+      });
+      toast.success('User deleted succesfully!');
+    } catch (err) {
+      toast.error(getError(err));
+    }
+  };
+
   return (
     <div>
       <Helmet>
@@ -65,6 +77,7 @@ export default function UserListScreen() {
             <tr>
               <th>Id</th>
               <th>Name</th>
+              <th>Email</th>
               <th>Role</th>
             </tr>
           </thead>
@@ -73,6 +86,7 @@ export default function UserListScreen() {
               <tr key={user._id}>
                 <td>{user._id}</td>
                 <td>{user.name}</td>
+                <td>{user.email}</td>
                 <td>TODO</td>
                 <td>
                   <Button>
@@ -87,7 +101,11 @@ export default function UserListScreen() {
                   </Button>
                 </td>
                 <td>
-                  <Button variant="light">
+                  <Button
+                    variant="light"
+                    value={user._id}
+                    onClick={deleteUserHandler}
+                  >
                     <i className="fas fa-trash"></i>
                   </Button>
                 </td>

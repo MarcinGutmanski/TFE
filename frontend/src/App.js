@@ -19,6 +19,8 @@ import MemberFormListScreen from './screens/MemberFormListScreen';
 import ProductAddScreen from './screens/ProductAddScreen';
 import ProductFormScreen from './screens/ProductFormScreen';
 import ProductFormListScreen from './screens/ProductFormListScreen';
+import MemberFormDetails from './screens/MemberFormDetails';
+import ProductFormDetails from './screens/ProductFormDetails';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import Navbar from 'react-bootstrap/Navbar';
@@ -66,7 +68,7 @@ function App() {
                   )}
                   {userInfo && (
                     <Link to="/productForm" className="nav-link">
-                      Add a product
+                      Submit a product
                     </Link>
                   )}
                   <Link to="/basket" className="nav-link">
@@ -213,6 +215,22 @@ function App() {
                 element={
                   <AdminRoute>
                     <ProductAddScreen />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/forms/memberForm/:id"
+                element={
+                  <AdminRoute>
+                    <MemberFormDetails />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/forms/productForm/:id"
+                element={
+                  <AdminRoute>
+                    <ProductFormDetails />
                   </AdminRoute>
                 }
               />

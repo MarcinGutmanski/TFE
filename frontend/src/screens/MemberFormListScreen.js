@@ -79,7 +79,7 @@ export default function MemberFormListScreen() {
                 <td>
                   <Button>
                     <Link
-                      to={`/forms/${form._id}`}
+                      to={`/forms/memberForm/${form._id}`}
                       style={{
                         textDecoration: 'none',
                         color: '#FFFFFF',

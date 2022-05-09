@@ -83,7 +83,7 @@ export default function ProductFormListScreen() {
                 <td>
                   <Button>
                     <Link
-                      to={`/products/${form._id}`}
+                      to={`/forms/productForm/${form._id}`}
                       style={{ textDecoration: 'none', color: '#FFFFFF' }}
                     >
                       <Card.Title style={{ fontSize: '16px' }}>

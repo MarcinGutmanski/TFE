@@ -51,9 +51,9 @@ export default function ProductFormScreen() {
   return (
     <div className="container small-container">
       <Helmet>
-        <title>Add a product</title>
+        <title>Sumbit a product</title>
       </Helmet>
-      <h1 className="my-3">Add a product</h1>
+      <h1 className="my-3">Submit a product</h1>
       <Form onSubmit={submitHandler}>
         <Form.Group className="mb-3" controlId="name">
           <Form.Label>Name</Form.Label>

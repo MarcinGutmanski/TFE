@@ -1,10 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useReducer, useEffect, useContext } from 'react';
+import React, { useReducer, useEffect, useContext, useState } from 'react';
 import axios from 'axios';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Rating from '../components/Rating';
+import Form from 'react-bootstrap/Form';
 import Badge from 'react-bootstrap/Badge';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
@@ -13,6 +14,7 @@ import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
 import { getError } from '../utils.js';
 import { Store } from '../Store';
+import { toast } from 'react-toastify';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -36,6 +38,7 @@ function ProductScreen() {
     error: '',
     product: [],
   });
+  const [rating, setRating] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -51,7 +54,7 @@ function ProductScreen() {
   }, [name]);
 
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { basket } = state;
+  const { basket, userInfo } = state;
   const addToBasketHandler = async () => {
     const existingItem = basket.basketItems.find((x) => x._id === product._id);
     const quantity = existingItem ? existingItem.quantity + 1 : 1;
@@ -65,6 +68,22 @@ function ProductScreen() {
       payload: { ...product, quantity },
     });
     navigate('/basket');
+  };
+
+  const submitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(
+        `/api/products/rate/${product._id}`,
+        {
+          rating,
+        },
+        { headers: { authorization: `Bearer ${userInfo.token}` } }
+      );
+      window.location.reload(false);
+    } catch (err) {
+      toast.error(getError(err));
+    }
   };
 
   return loading ? (
@@ -100,6 +119,39 @@ function ProductScreen() {
               Description:
               <p>{product.description}</p>
             </ListGroup.Item>
+            {userInfo && (
+              <ListGroup.Item>
+                <Form onSubmit={submitHandler}>
+                  <Form.Group className="mb-3" controlId="rating">
+                    <Form.Label>Rate this product :</Form.Label>
+                    <Form.Select
+                      aria-label="Rating"
+                      value={rating}
+                      onChange={(e) => setRating(e.target.value)}
+                    >
+                      <option type="number" value="1">
+                        1- Very bad
+                      </option>
+                      <option type="number" value="2">
+                        2- Bad
+                      </option>
+                      <option type="number" value="3">
+                        3- Mediocre
+                      </option>
+                      <option type="number" value="4">
+                        4- Good
+                      </option>
+                      <option type="number" value="5">
+                        5- Perfect
+                      </option>
+                    </Form.Select>
+                  </Form.Group>
+                  <div className="mb-3">
+                    <Button type="submit">Rate</Button>
+                  </div>
+                </Form>
+              </ListGroup.Item>
+            )}
           </ListGroup>
         </Col>
         <Col md={3}>

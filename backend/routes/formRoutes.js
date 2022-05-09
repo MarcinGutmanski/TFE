@@ -67,4 +67,22 @@ formRouter.post(
   })
 );
 
+formRouter.get('/memberForm/:id', async (req, res) => {
+  const memberForm = await MemberForm.findById(req.params.id);
+  if (memberForm) {
+    res.send(memberForm);
+  } else {
+    res.status(404).send({ message: 'Member form not found.' });
+  }
+});
+
+formRouter.get('/productForm/:id', async (req, res) => {
+  const productForm = await ProductForm.findById(req.params.id);
+  if (productForm) {
+    res.send(productForm);
+  } else {
+    res.status(404).send({ message: 'Product form not found.' });
+  }
+});
+
 export default formRouter;

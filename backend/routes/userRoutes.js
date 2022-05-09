@@ -1,5 +1,6 @@
 import express from 'express';
 import User from '../models/userModel.js';
+import Order from '../models/orderModel.js';
 import bcrypt from 'bcryptjs';
 import { generateToken } from '../utils.js';
 import expressAsyncHandler from 'express-async-handler';
@@ -75,6 +76,22 @@ userRouter.get('/admin', async (req, res) => {
     res.send(users);
   } else {
     res.status(404).send({ message: 'Users not found.' });
+  }
+});
+
+userRouter.delete('/:id', async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (user) {
+    const orders = await Order.find({ user: req.params.id });
+    if (orders) {
+      await Order.deleteMany({ user: req.params.id });
+      console.log('Order supprimé');
+    }
+    await User.deleteOne({ _id: req.params.id });
+    console.log('User supprimé');
+    res.status(200);
+  } else {
+    res.status(404).send({ message: 'User not found.' });
   }
 });
 
