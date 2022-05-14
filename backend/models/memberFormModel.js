@@ -6,6 +6,11 @@ const memberFormSchema = new mongoose.Schema(
     email: { type: String, required: true },
     description: { type: String, required: true },
     isAccepted: { type: Boolean, default: false },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: false,
+    },
   },
   {
     timestamps: true,

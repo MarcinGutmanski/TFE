@@ -7,6 +7,7 @@ import productRouter from './routes/productRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import orderRouter from './routes/orderRoutes.js';
 import formRouter from './routes/formRoutes.js';
+import nodemailer from 'nodemailer';
 
 dotenv.config();
 

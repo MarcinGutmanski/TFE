@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useReducer, useEffect, useContext } from 'react';
+import { useReducer, useEffect, useContext, useState } from 'react';
 import { Store } from '../Store';
 import { getError } from '../utils.js';
 import { toast } from 'react-toastify';
@@ -31,6 +31,7 @@ export default function ProductFormDetails() {
     error: '',
     productForm: [],
   });
+  const [feedback, setFeedback] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,6 +55,7 @@ export default function ProductFormDetails() {
       await axios.post(
         '/api/products/addFromForm',
         {
+          id: id,
           name: productForm.name,
           price: productForm.price,
           quantity: productForm.quantity,
@@ -63,6 +65,23 @@ export default function ProductFormDetails() {
         { headers: { authorization: `Bearer ${userInfo.token}` } }
       );
       toast.success('Product added succesfully!');
+    } catch (err) {
+      toast.error(getError(err));
+    }
+  };
+
+  const refuseProductHandler = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(
+        '/api/products/declineFromForm',
+        {
+          id: id,
+          feedback: feedback,
+        },
+        { headers: { authorization: `Bearer ${userInfo.token}` } }
+      );
+      toast.success('Product declined!');
     } catch (err) {
       toast.error(getError(err));
     }
@@ -99,13 +118,27 @@ export default function ProductFormDetails() {
             disabled
           />
         </Form.Group>
-
         <Form.Group className="mb-3" controlId="category">
           <Form.Label>Category</Form.Label>
           <Form.Control type="text" value={productForm.category} disabled />
         </Form.Group>
+        <Form.Group className="mb-3" controlId="feedback">
+          <Form.Label>Feedback</Form.Label>
+          <Form.Control
+            as="textarea"
+            rows={5}
+            onChange={(x) => setFeedback(x.target.value)}
+          />
+        </Form.Group>
         <div className="mb-3">
-          <Button type="submit">Add this product</Button>
+          <Button variant="success" type="submit">
+            Add this product
+          </Button>
+        </div>
+        <div className="mb-3">
+          <Button variant="danger" onClick={refuseProductHandler}>
+            Decline product
+          </Button>
         </div>
       </Form>
     </div>

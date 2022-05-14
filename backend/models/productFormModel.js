@@ -8,6 +8,11 @@ const productFormSchema = new mongoose.Schema(
     description: { type: String, required: true },
     category: { type: String, required: true },
     isAccepted: { type: Boolean, default: false },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: false,
+    },
   },
   {
     timestamps: true,

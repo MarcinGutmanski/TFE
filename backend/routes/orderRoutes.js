@@ -1,6 +1,7 @@
 import express from 'express';
 import Order from '../models/orderModel.js';
-import { isAuth } from '../utils.js';
+import User from '../models/userModel.js';
+import { isAuth, transporter } from '../utils.js';
 import expressAsyncHandler from 'express-async-handler';
 
 const orderRouter = express.Router();
@@ -19,7 +20,31 @@ orderRouter.post(
       user: req.user._id,
     });
 
+    const user = await User.findById(req.user._id);
     const order = await newOrder.save();
+
+    const mailOptions = {
+      from: 'creamates.info@gmail.com',
+      to: user.email,
+      subject: 'Thank you for your purchase!',
+      html:
+        'Hello ' +
+        user.name +
+        ', <br/><br/>Thank you for chosing our products, you won' +
+        't regret it!<br/><br/> You can check your order <a href="' +
+        'http://localhost:3000/order/' +
+        order._id +
+        '">here</a><br/><br/>Kind regards, <br/> Créamates',
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+
     res.status(201).send({ message: 'New Order created!', order });
   })
 );

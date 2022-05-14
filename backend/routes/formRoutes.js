@@ -6,7 +6,7 @@ import expressAsyncHandler from 'express-async-handler';
 
 const formRouter = express.Router();
 formRouter.get('/admin/member', async (req, res) => {
-  const memberForms = await MemberForm.find();
+  const memberForms = await MemberForm.find({ isAccepted: false });
   if (memberForms) {
     res.send(memberForms);
   } else {
@@ -15,7 +15,7 @@ formRouter.get('/admin/member', async (req, res) => {
 });
 
 formRouter.get('/admin/product', async (req, res) => {
-  const productForms = await ProductForm.find();
+  const productForms = await ProductForm.find({ isAccepted: false });
   if (productForms) {
     res.send(productForms);
   } else {
@@ -25,6 +25,7 @@ formRouter.get('/admin/product', async (req, res) => {
 
 formRouter.post(
   '/submit',
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const newMemberForm = new MemberForm({
       name: req.body.name,
@@ -32,6 +33,7 @@ formRouter.post(
       description: req.body.description,
       type: 'Member',
       isAccepted: false,
+      user: req.user._id,
     });
     const memberForm = await newMemberForm.save();
     res.send({
@@ -45,7 +47,9 @@ formRouter.post(
 
 formRouter.post(
   '/addProduct',
+  isAuth,
   expressAsyncHandler(async (req, res) => {
+    console.log(req.user);
     const newProductForm = new ProductForm({
       name: req.body.name,
       price: req.body.price,
@@ -53,6 +57,7 @@ formRouter.post(
       description: req.body.description,
       category: req.body.category,
       isAccepted: false,
+      user: req.user._id,
     });
     const productForm = await newProductForm.save();
     res.send({

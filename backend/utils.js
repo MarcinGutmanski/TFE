@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
 
 export const generateToken = (user) => {
   return jwt.sign(
@@ -30,3 +31,12 @@ export const isAuth = (req, res, next) => {
     res.status(401).send({ message: 'No token' });
   }
 };
+
+export const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'creamates.info@gmail.com',
+    pass: 'CreamatesAdmin3584',
+  },
+  from: 'creamates.info@gmail.com',
+});

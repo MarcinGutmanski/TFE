@@ -1,10 +1,11 @@
 import express from 'express';
 import User from '../models/userModel.js';
 import Order from '../models/orderModel.js';
+import MemberForm from '../models/memberFormModel.js';
 import bcrypt from 'bcryptjs';
 import { generateToken } from '../utils.js';
 import expressAsyncHandler from 'express-async-handler';
-import { isAuth } from '../utils.js';
+import { isAuth, transporter } from '../utils.js';
 
 const userRouter = express.Router();
 
@@ -36,6 +37,27 @@ userRouter.post(
       password: bcrypt.hashSync(req.body.password),
     });
     const user = await newUser.save();
+
+    const mailOptions = {
+      from: 'creamates.info@gmail.com',
+      to: newUser.email,
+      subject: 'Welcome to Creamates!',
+      html:
+        'Hello ' +
+        newUser.name +
+        ', <br/><br/>Thank you for joining!<br/><br/> Now that you joined you can go back to our <a href="' +
+        'http://localhost:3000' +
+        '">website</a><br/><br/>Kind regards, <br/> Créamates',
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+
     res.send({
       _id: user._id,
       name: user.name,
@@ -77,6 +99,74 @@ userRouter.get('/admin', async (req, res) => {
   } else {
     res.status(404).send({ message: 'Users not found.' });
   }
+});
+
+userRouter.post('/addFromForm', async (req, res) => {
+  const memberForm = await MemberForm.findById(req.body.id);
+
+  memberForm.isAccepted = true;
+
+  const updatedProductForm = await memberForm.save();
+
+  const user = await User.findOne({ _id: memberForm.user });
+
+  const mailOptions = {
+    from: 'creamates.info@gmail.com',
+    to: user.email,
+    subject: 'Membership accepted!',
+    html:
+      'Hello ' +
+      user.name +
+      ', <br/><br/>Your membership has been approved!<br/><br/> You can now submit your own products, once they are accepted by the admin, they will be out there for eveyrone to see!<br/><br/>' +
+      'If you want to add a product, please go <a href="' +
+      'http://localhost:3000/productForm' +
+      '">here</a><br/><br/>Kind regards, <br/> Créamates',
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+
+  res.send(200);
+});
+
+userRouter.post('/declineFromForm', async (req, res) => {
+  const memberForm = await MemberForm.findById(req.body.id);
+
+  const user = await User.findOne({ _id: memberForm.user });
+
+  if (memberForm) {
+    await MemberForm.deleteOne({ _id: req.body.id });
+    console.log('Form supprimé');
+  }
+
+  const mailOptions = {
+    from: 'creamates.info@gmail.com',
+    to: user.email,
+    subject: 'Membership declined',
+    html:
+      'Hello ' +
+      user.name +
+      ', <br/><br/>Sorry, but your membership has been declined<br/><br/> Here is an explanation why : ' +
+      req.body.feedback +
+      '<br/><br/> If you apply this feedback, you can try applying again <a href="' +
+      'http://localhost:3000/memberForm' +
+      '">here</a><br/><br/>Kind regards, <br/> Créamates',
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+
+  res.send(200);
 });
 
 userRouter.delete('/:id', async (req, res) => {

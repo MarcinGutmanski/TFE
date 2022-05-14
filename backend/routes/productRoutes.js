@@ -1,6 +1,9 @@
 import express from 'express';
 import Product from '../models/productModel.js';
+import ProductForm from '../models/productFormModel.js';
+import User from '../models/userModel.js';
 import expressAsyncHandler from 'express-async-handler';
+import { isAuth, transporter } from '../utils.js';
 
 const productRouter = express.Router();
 
@@ -126,7 +129,7 @@ productRouter.post('/add', async (req, res) => {
     category: req.body.category,
     rating: 0,
     numReviews: 0,
-    image: '/images/image-not-found.png',
+    image: '/images/image-not-found.jpg',
   });
   const product = await newProduct.save();
 
@@ -136,7 +139,6 @@ productRouter.post('/add', async (req, res) => {
 });
 
 productRouter.post('/addFromForm', async (req, res) => {
-  console.log(req.body);
   const newProduct = new Product({
     name: req.body.name,
     price: req.body.price,
@@ -145,13 +147,81 @@ productRouter.post('/addFromForm', async (req, res) => {
     category: req.body.category,
     rating: 0,
     numReviews: 0,
-    image: '/images/image-not-found.png',
+    image: '/images/image-not-found.jpg',
   });
   const product = await newProduct.save();
+
+  const productForm = await ProductForm.findById(req.body.id);
+
+  productForm.isAccepted = true;
+
+  const updatedProductForm = await productForm.save();
+
+  const user = await User.findOne({ _id: productForm.user });
+
+  const mailOptions = {
+    from: 'creamates.info@gmail.com',
+    to: user.email,
+    subject: 'Your product has been added!',
+    html:
+      'Hello ' +
+      user.name +
+      ', <br/><br/>Your product : ' +
+      productForm.name +
+      ' has been added to the website<br/><br/> You can see your product <a href="' +
+      'http://localhost:3000/product/' +
+      product.name +
+      '">here</a><br/><br/>Kind regards, <br/> Créamates',
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
 
   if (product) {
     res.send(product);
   }
+});
+
+productRouter.post('/declineFromForm', async (req, res) => {
+  const productForm = await ProductForm.findById(req.body.id);
+
+  const user = await User.findOne({ _id: productForm.user });
+
+  if (productForm) {
+    await ProductForm.deleteOne({ _id: req.body.id });
+    console.log('Form supprimé');
+  }
+
+  const mailOptions = {
+    from: 'creamates.info@gmail.com',
+    to: user.email,
+    subject: 'Your product has been declined',
+    html:
+      'Hello ' +
+      user.name +
+      ', <br/><br/>Sorry, but your product : ' +
+      productForm.name +
+      ' has been declined<br/><br/> Here is an explanation why : ' +
+      req.body.feedback +
+      '<br/><br/> If you apply asked changes/remarks, you can try applying again <a href="' +
+      'http://localhost:3000/productForm' +
+      '">here</a><br/><br/>Kind regards, <br/> Créamates',
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+
+  res.send(200);
 });
 
 productRouter.get('/:id', async (req, res) => {
