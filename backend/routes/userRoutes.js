@@ -2,6 +2,7 @@ import express from 'express';
 import User from '../models/userModel.js';
 import Order from '../models/orderModel.js';
 import Role from '../models/roleModel.js';
+import Product from '../models/productModel.js';
 import MemberForm from '../models/memberFormModel.js';
 import bcrypt from 'bcryptjs';
 import { generateToken } from '../utils.js';
@@ -13,7 +14,10 @@ const userRouter = express.Router();
 userRouter.post(
   '/signin',
   expressAsyncHandler(async (req, res) => {
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({
+      email: req.body.email,
+      isDeleted: false,
+    });
     if (user) {
       if (bcrypt.compareSync(req.body.password, user.password)) {
         const role = await Role.findOne({ _id: user.role });
@@ -99,7 +103,7 @@ userRouter.put(
 );
 
 userRouter.get('/admin', async (req, res) => {
-  const users = await User.find();
+  const users = await User.find({ isDeleted: false });
   if (users) {
     res.send(users);
   } else {
@@ -212,16 +216,21 @@ userRouter.post('/role/:id', async (req, res) => {
   }
 });
 
-userRouter.delete('/:id', async (req, res) => {
+userRouter.post('/delete/:id', async (req, res) => {
   const user = await User.findById(req.params.id);
   if (user) {
     const orders = await Order.find({ user: req.params.id });
     if (orders) {
-      await Order.deleteMany({ user: req.params.id });
-      console.log('Order supprimé');
+      await Order.updateMany({ user: req.params.id }, { isDeleted: true });
+      console.log('Orders deleted');
     }
-    await User.deleteOne({ _id: req.params.id });
-    console.log('User supprimé');
+    const products = await Product.find({ user: req.params.id });
+    if (products) {
+      await Product.updateMany({ user: req.params.id }, { isDeleted: true });
+      console.log('Products deleted');
+    }
+    await User.updateOne({ _id: req.params.id }, { isDeleted: true });
+    console.log('User deleted');
     res.status(200);
   } else {
     res.status(404).send({ message: 'User not found.' });

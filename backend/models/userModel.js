@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema(
       ref: 'Role',
       required: false,
     },
+    isDeleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,

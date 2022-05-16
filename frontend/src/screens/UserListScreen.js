@@ -52,7 +52,7 @@ export default function UserListScreen() {
 
   const deleteUserHandler = async (e) => {
     try {
-      await axios.delete(`/api/users/${e.target.value}`, {
+      await axios.post(`/api/users/delete/${e.target.value}`, {
         headers: { authorization: `Bearer ${userInfo.token}` },
       });
       window.location.reload(false);

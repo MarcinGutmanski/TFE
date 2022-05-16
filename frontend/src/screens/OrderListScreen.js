@@ -67,7 +67,7 @@ export default function OrderListScreen() {
               <th>Date</th>
               <th>Total</th>
               <th>Paid</th>
-              <th>Delivered</th>
+              <th>Sent</th>
               <th>Actions</th>
             </tr>
           </thead>

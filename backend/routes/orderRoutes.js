@@ -67,7 +67,7 @@ orderRouter.get(
   '/mine',
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    const orders = await Order.find({ user: req.user._id });
+    const orders = await Order.find({ user: req.user._id, isDeleted: false });
     if (orders) {
       res.send(orders);
     } else {
@@ -77,7 +77,7 @@ orderRouter.get(
 );
 
 orderRouter.get('/admin', async (req, res) => {
-  const orders = await Order.find();
+  const orders = await Order.find({ isDeleted: false });
   if (orders) {
     res.send(orders);
   } else {
@@ -136,6 +136,47 @@ orderRouter.put(
       };
       const updatedOrder = await order.save();
       res.send({ message: 'Order Paid', order: updatedOrder });
+    } else {
+      res.status(404).send({ message: 'Order not found.' });
+    }
+  })
+);
+
+orderRouter.put(
+  '/order/send/:id',
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    console.log(order);
+    if (order) {
+      order.isDelivered = true;
+      order.deliveredAt = Date.now();
+      const updatedOrder = await order.save();
+
+      const user = await User.findOne({ _id: order.user });
+
+      const mailOptions = {
+        from: 'creamates.info@gmail.com',
+        to: user.email,
+        subject: 'Your order has been sent!',
+        html:
+          'Hello ' +
+          user.name +
+          ', <br/><br/>Your order has been sent, it should arrive in the next 5 working days<br/><br/> You can check your order <a href="' +
+          'http://localhost:3000/order/' +
+          order._id +
+          '">here</a><br/><br/>Kind regards, <br/> Créamates',
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+
+      res.send({ message: 'Order Sent', order: updatedOrder });
     } else {
       res.status(404).send({ message: 'Order not found.' });
     }

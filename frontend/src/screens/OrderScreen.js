@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
 import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 
 function reducer(state, action) {
@@ -128,6 +129,21 @@ export default function OrderScreen() {
     }
   }, [order, userInfo, orderId, navigate, paypalDispatch, successPay]);
 
+  const sendOrderHandler = async (e) => {
+    try {
+      await axios.put(
+        `/api/orders/order/send/${orderId}`,
+        {},
+        {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      window.location.reload(false);
+    } catch (err) {
+      toast.error(getError(err));
+    }
+  };
+
   return loading ? (
     <LoadingBox></LoadingBox>
   ) : error ? (
@@ -151,10 +167,10 @@ export default function OrderScreen() {
               </Card.Text>
               {order.isDelivered ? (
                 <MessageBox variant="success">
-                  Delivered at {order.deliveredAt}
+                  Sent at {order.deliveredAt.substring(0, 10)}
                 </MessageBox>
               ) : (
-                <MessageBox variant="danger">Not delivered</MessageBox>
+                <MessageBox variant="danger">Not sent</MessageBox>
               )}
             </Card.Body>
           </Card>
@@ -245,6 +261,9 @@ export default function OrderScreen() {
                     )}
                     {loadingPay && <LoadingBox></LoadingBox>}
                   </ListGroup.Item>
+                )}
+                {!order.isDelivered && userInfo.role === 'Admin' && (
+                  <Button onClick={sendOrderHandler}>Send this order</Button>
                 )}
               </ListGroup>
             </Card.Body>
