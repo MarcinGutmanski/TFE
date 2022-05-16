@@ -17,12 +17,18 @@ import UserListScreen from './screens/UserListScreen';
 import MemberFormScreen from './screens/MemberFormScreen';
 import MemberFormListScreen from './screens/MemberFormListScreen';
 import ProductAddScreen from './screens/ProductAddScreen';
+import ProductModifyScreen from './screens/ProductModifyScreen';
 import ProductFormScreen from './screens/ProductFormScreen';
 import ProductFormListScreen from './screens/ProductFormListScreen';
 import MemberFormDetails from './screens/MemberFormDetails';
 import ProductFormDetails from './screens/ProductFormDetails';
+import RoleScreen from './screens/RoleScreen';
+import FeedbackScreen from './screens/FeedbackScreen';
+import FeedbackListScreen from './screens/FeedbackListScreen';
+import FeedbackDetailsScreen from './screens/FeedbackDetailsScreen';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
+import MemberRoute from './components/MemberRoute';
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -61,12 +67,17 @@ function App() {
               <Navbar.Collapse id="basic-navbar-nav">
                 <SearchBox />
                 <Nav className="me-auto w-100 justify-content-end">
-                  {userInfo && (
+                  {userInfo && userInfo.role !== 'Admin' && (
+                    <Link to="/feedback" className="nav-link">
+                      Feedback
+                    </Link>
+                  )}
+                  {userInfo && userInfo.role === 'Basic' && (
                     <Link to="/memberForm" className="nav-link">
                       Become a member
                     </Link>
                   )}
-                  {userInfo && (
+                  {userInfo && userInfo.role === 'Member' && (
                     <Link to="/productForm" className="nav-link">
                       Submit a product
                     </Link>
@@ -101,8 +112,7 @@ function App() {
                       Sign In
                     </Link>
                   )}
-                  {/* && userInfo.isAdmin */}
-                  {userInfo && (
+                  {userInfo && userInfo.role === 'Admin' && (
                     <NavDropdown title="Admin" id="admin-nav-dropdown">
                       <LinkContainer to="/admin/productList">
                         <NavDropdown.Item>Products</NavDropdown.Item>
@@ -112,6 +122,9 @@ function App() {
                       </LinkContainer>
                       <LinkContainer to="/admin/userList">
                         <NavDropdown.Item>Users</NavDropdown.Item>
+                      </LinkContainer>
+                      <LinkContainer to="/admin/feedbacks">
+                        <NavDropdown.Item>Feedbacks</NavDropdown.Item>
                       </LinkContainer>
                       <LinkContainer to="/admin/memberForms">
                         <NavDropdown.Item>Member Forms</NavDropdown.Item>
@@ -136,6 +149,14 @@ function App() {
               <Route path="/shipping" element={<ShippingAddressScreen />} />
               <Route path="/payment" element={<PaymentMethodScreen />} />
               <Route path="/placeOrder" element={<PlaceOrderScreen />} />
+              <Route
+                path="/feedback"
+                element={
+                  <ProtectedRoute>
+                    <FeedbackScreen />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/order/:id"
                 element={
@@ -175,6 +196,14 @@ function App() {
                 element={
                   <AdminRoute>
                     <ProductListScreen />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/feedbacks"
+                element={
+                  <AdminRoute>
+                    <FeedbackListScreen />
                   </AdminRoute>
                 }
               />
@@ -219,6 +248,14 @@ function App() {
                 }
               />
               <Route
+                path="/product/modify/:id"
+                element={
+                  <AdminRoute>
+                    <ProductModifyScreen />
+                  </AdminRoute>
+                }
+              />
+              <Route
                 path="/forms/memberForm/:id"
                 element={
                   <AdminRoute>
@@ -234,13 +271,29 @@ function App() {
                   </AdminRoute>
                 }
               />
+              <Route
+                path="/feedback/:id"
+                element={
+                  <AdminRoute>
+                    <FeedbackDetailsScreen />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/users/role/:id"
+                element={
+                  <AdminRoute>
+                    <RoleScreen />
+                  </AdminRoute>
+                }
+              />
               {/* Parrainé Routes */}
               <Route
                 path="/productForm"
                 element={
-                  <AdminRoute>
+                  <MemberRoute>
                     <ProductFormScreen />
-                  </AdminRoute>
+                  </MemberRoute>
                 }
               />
               <Route path="/" element={<HomeScreen />} />

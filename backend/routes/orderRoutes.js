@@ -1,6 +1,8 @@
 import express from 'express';
 import Order from '../models/orderModel.js';
+import Product from '../models/productModel.js';
 import User from '../models/userModel.js';
+import Feedback from '../models/feedbackModel.js';
 import { isAuth, transporter } from '../utils.js';
 import expressAsyncHandler from 'express-async-handler';
 
@@ -18,6 +20,18 @@ orderRouter.post(
       taxPrice: req.body.taxPrice,
       totalPrice: req.body.totalPrice,
       user: req.user._id,
+    });
+
+    const productsToUpdate = await Product.find();
+
+    productsToUpdate.forEach((product) => {
+      newOrder.orderItems.forEach((orderedProduct) => {
+        if (product._id.toString() === orderedProduct.product.toString()) {
+          product.countInStock = product.countInStock - orderedProduct.quantity;
+          console.log(product);
+          product.save();
+        }
+      });
     });
 
     const user = await User.findById(req.user._id);
@@ -67,9 +81,31 @@ orderRouter.get('/admin', async (req, res) => {
   if (orders) {
     res.send(orders);
   } else {
-    res.status(404).send({ message: 'Ther is no order' });
+    res.status(404).send({ message: 'There is no order' });
   }
 });
+
+orderRouter.post(
+  '/feedback',
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findOne({ _id: req.body.order });
+    if (order) {
+      const newFeedback = new Feedback({
+        name: req.body.name,
+        email: req.body.email,
+        feedback: req.body.feedback,
+        order: order._id,
+      });
+
+      await newFeedback.save();
+
+      res.send(200);
+    } else {
+      res.status(404).send({ message: 'The specified order does not exist' });
+    }
+  })
+);
 
 orderRouter.get(
   '/order/:id',

@@ -35,8 +35,8 @@ function reducer(state, action) {
 
 const prices = [
   { name: '1€ -> 5€', value: '1-5' },
-  { name: '6€ -> 10€', value: '6-10' },
-  { name: '11€ -> 25€', value: '11-25' },
+  { name: '5€ -> 10€', value: '5-10' },
+  { name: '10€ -> 25€', value: '10-25' },
   { name: '25€ and more', value: '25-500' },
 ];
 

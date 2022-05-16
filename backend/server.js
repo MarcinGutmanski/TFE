@@ -7,6 +7,7 @@ import productRouter from './routes/productRoutes.js';
 import userRouter from './routes/userRoutes.js';
 import orderRouter from './routes/orderRoutes.js';
 import formRouter from './routes/formRoutes.js';
+import feedbackRouter from './routes/feedbackRoutes.js';
 import nodemailer from 'nodemailer';
 
 dotenv.config();
@@ -34,6 +35,7 @@ app.use('/api/products', productRouter);
 app.use('/api/users', userRouter);
 app.use('/api/orders', orderRouter);
 app.use('/api/forms', formRouter);
+app.use('/api/feedbacks', feedbackRouter);
 
 const __dirname = path.resolve();
 app.use(express.static(path.join(__dirname, '/frontend/build')));

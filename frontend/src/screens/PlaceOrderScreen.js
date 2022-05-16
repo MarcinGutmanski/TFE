@@ -95,7 +95,7 @@ export default function PlaceOrderScreen() {
               <Card.Title>Shipping</Card.Title>
               <Card.Text>
                 <strong>Name:</strong> {basket.shippingAddress.fullName} <br />
-                <strong>Address: </strong> {basket.shippingAddress.address},{' '}
+                <strong>Adress: </strong> {basket.shippingAddress.address},{' '}
                 {basket.shippingAddress.city},{' '}
                 {basket.shippingAddress.postalCode},{' '}
                 {basket.shippingAddress.pays}

@@ -101,7 +101,6 @@ export default function ProductAddScreen() {
             {categories.map((cat) => (
               <option value={cat}>{cat}</option>
             ))}
-            <option value={'Other'}>Other</option>
           </Form.Select>
         </Form.Group>
         <div className="mb-3">

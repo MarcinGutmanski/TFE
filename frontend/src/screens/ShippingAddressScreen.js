@@ -62,7 +62,7 @@ export default function ShippingAddressScreen() {
         <h1 className="my-3">Shipping Info</h1>
         <Form onSubmit={submitHandler}>
           <Form.Group className="mb-3" controlId="fullName">
-            <Form.Label>Nom/Prénom</Form.Label>
+            <Form.Label>Lastname/Firstname</Form.Label>
             <Form.Control
               value={fullName}
               onChange={(x) => setFullName(x.target.value)}
@@ -70,7 +70,7 @@ export default function ShippingAddressScreen() {
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="address">
-            <Form.Label>Addresse</Form.Label>
+            <Form.Label>Adress</Form.Label>
             <Form.Control
               value={address}
               onChange={(x) => setAddress(x.target.value)}
@@ -78,7 +78,7 @@ export default function ShippingAddressScreen() {
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="city">
-            <Form.Label>Ville</Form.Label>
+            <Form.Label>City</Form.Label>
             <Form.Control
               value={city}
               onChange={(x) => setCity(x.target.value)}
@@ -86,7 +86,7 @@ export default function ShippingAddressScreen() {
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="postalCode">
-            <Form.Label>Code postal</Form.Label>
+            <Form.Label>Postal code</Form.Label>
             <Form.Control
               value={postalCode}
               onChange={(x) => setPostalCode(x.target.value)}
@@ -94,7 +94,7 @@ export default function ShippingAddressScreen() {
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="pays">
-            <Form.Label>Pays</Form.Label>
+            <Form.Label>Country</Form.Label>
             <Form.Control
               value={pays}
               onChange={(x) => setPays(x.target.value)}
@@ -103,7 +103,7 @@ export default function ShippingAddressScreen() {
           </Form.Group>
           <div className="mb-3">
             <Button variant="primary" type="submit">
-              Continuez
+              Continue
             </Button>
           </div>
         </Form>

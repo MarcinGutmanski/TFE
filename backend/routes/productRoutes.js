@@ -2,13 +2,16 @@ import express from 'express';
 import Product from '../models/productModel.js';
 import ProductForm from '../models/productFormModel.js';
 import User from '../models/userModel.js';
+import Order from '../models/orderModel.js';
+import UserRating from '../models/userRatingModel.js';
+import Notification from '../models/notificationModel.js';
 import expressAsyncHandler from 'express-async-handler';
 import { isAuth, transporter } from '../utils.js';
 
 const productRouter = express.Router();
 
 productRouter.get('/', async (req, res) => {
-  const products = await Product.find();
+  const products = await Product.find({ isDeleted: false });
   res.send(products);
 });
 
@@ -93,9 +96,13 @@ productRouter.get(
 );
 
 productRouter.get('/name/:name', async (req, res) => {
-  const product = await Product.findOne({ name: req.params.name });
+  const product = await Product.findOne({
+    name: req.params.name,
+    isDeleted: false,
+  });
   if (product) {
-    res.send(product);
+    const user = await User.findOne({ _id: product.user });
+    res.send({ product, user });
   } else {
     res.status(404).send({ message: 'Product not found.' });
   }
@@ -111,7 +118,7 @@ productRouter.get(
 );
 
 productRouter.get('/admin', async (req, res) => {
-  const products = await Product.find();
+  const products = await Product.find({ isDeleted: false });
   if (products) {
     res.send(products);
   } else {
@@ -139,6 +146,8 @@ productRouter.post('/add', async (req, res) => {
 });
 
 productRouter.post('/addFromForm', async (req, res) => {
+  const productForm = await ProductForm.findById(req.body.id);
+
   const newProduct = new Product({
     name: req.body.name,
     price: req.body.price,
@@ -148,10 +157,9 @@ productRouter.post('/addFromForm', async (req, res) => {
     rating: 0,
     numReviews: 0,
     image: '/images/image-not-found.jpg',
+    user: productForm.user,
   });
   const product = await newProduct.save();
-
-  const productForm = await ProductForm.findById(req.body.id);
 
   productForm.isAccepted = true;
 
@@ -233,9 +241,146 @@ productRouter.get('/:id', async (req, res) => {
   }
 });
 
-productRouter.post('/rate/:id', async (req, res) => {
-  const product = await Product.findById(req.params.id);
+productRouter.post('/add', async (req, res) => {
+  console.log(req.body);
+  const newProduct = new Product({
+    name: req.body.name,
+    price: req.body.price,
+    countInStock: req.body.quantity,
+    description: req.body.description,
+    category: req.body.category,
+    rating: 0,
+    numReviews: 0,
+    image: '/images/image-not-found.jpg',
+  });
+  const product = await newProduct.save();
+
   if (product) {
+    res.send(product);
+  }
+});
+
+async function notifyUser(notifId, userId, productId) {
+  const user = await User.findOne({ _id: userId });
+  const product = await Product.findOne({ _id: productId });
+  const mailOptions = {
+    from: 'creamates.info@gmail.com',
+    to: user.email,
+    subject: 'Product available!',
+    html:
+      'Hello ' +
+      user.name +
+      ', <br/><br/>The product : ' +
+      product.name +
+      ' is now available!<br/><br/> You can see it <a href="' +
+      'http://localhost:3000/product/' +
+      product.name +
+      '">here</a><br/><br/>Kind regards, <br/> Créamates',
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+
+  await Notification.deleteOne({ _id: notifId });
+}
+
+productRouter.post('/modify/:id', async (req, res) => {
+  let product = await Product.findOne({ _id: req.params.id });
+  console.log(product);
+
+  if (product.countInStock == 0 && req.body.quantity > 0) {
+    console.log('It went here');
+    const notifications = await Notification.find({ product: product._id });
+
+    notifications.forEach((notif) => {
+      notifyUser(notif._id, notif.user, notif.product);
+    });
+  }
+
+  product.name = req.body.name;
+  product.price = req.body.price;
+  product.countInStock = req.body.quantity;
+  product.description = req.body.description;
+  product.category = req.body.category;
+
+  const updatedProduct = await product.save();
+
+  const user = await User.findOne({ _id: product.user });
+
+  const mailOptions = {
+    from: 'creamates.info@gmail.com',
+    to: user.email,
+    subject: 'Your product has been updated!',
+    html:
+      'Hello ' +
+      user.name +
+      ', <br/><br/>Your product : ' +
+      product.name +
+      ' has been updated.<br/><br/> You can see your product <a href="' +
+      'http://localhost:3000/product/' +
+      product.name +
+      '">here</a><br/><br/>Kind regards, <br/> Créamates',
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+
+  res.send(200);
+});
+
+productRouter.post('/delete/:id', async (req, res) => {
+  let product = await Product.findOne({ _id: req.params.id });
+
+  product.isDeleted = true;
+
+  const updatedProduct = await product.save();
+
+  const user = await User.findOne({ _id: product.user });
+
+  const mailOptions = {
+    from: 'creamates.info@gmail.com',
+    to: user.email,
+    subject: 'Your product has been deleted',
+    html:
+      'Hello ' +
+      user.name +
+      ', <br/><br/>Your product : ' +
+      product.name +
+      ' has been deleted.<br/><br/> If you think this is a mistake, please respond to this email.<br/><br/>Kind regards, <br/> Créamates',
+  };
+
+  transporter.sendMail(mailOptions, function (error, info) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+
+  res.send(200);
+});
+
+productRouter.post('/rate/:id', isAuth, async (req, res) => {
+  const product = await Product.findById(req.params.id);
+  const user = await User.findOne({ _id: req.user._id });
+  const userRating = await UserRating.find({ user: user._id });
+  const orders = await Order.find({
+    user: user._id,
+    'orderItems._id': product._id,
+  });
+  console.log(orders);
+  console.log(userRating);
+  if (product && userRating.length == 0 && orders) {
     const total = product.numReviews * product.rating;
     const newRating =
       (total + parseInt(req.body.rating)) / (product.numReviews + 1);
@@ -243,11 +388,42 @@ productRouter.post('/rate/:id', async (req, res) => {
       numReviews: product.numReviews + 1,
       rating: newRating,
     });
+
+    const userRating = new UserRating({
+      user: user._id,
+      product: product._id,
+      rating: req.body.rating,
+    });
+
+    await userRating.save();
+
     await updatedProduct.save();
     console.log(updatedProduct);
     res.send(updatedProduct);
   } else {
-    res.status(404).send({ message: 'Product not found.' });
+    res.status(404).send({ message: 'You can not rate this item.' });
+  }
+});
+
+productRouter.post('/notify/:id', isAuth, async (req, res) => {
+  const product = await Product.findById(req.params.id);
+  const user = await User.findOne({ _id: req.user._id });
+  const notification = await Notification.find({
+    user: user._id,
+    product: product._id,
+  });
+  console.log(notification);
+  if (notification.length == 0) {
+    const newNotification = new Notification({
+      user: user._id,
+      product: product._id,
+    });
+    await newNotification.save();
+    res.send(200);
+  } else {
+    res
+      .status(404)
+      .send({ message: 'You have already asked for a notification.' });
   }
 });
 

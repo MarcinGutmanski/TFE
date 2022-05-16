@@ -33,7 +33,7 @@ function ProductScreen() {
   const params = useParams();
   const navigate = useNavigate();
   const { name } = params;
-  const [{ loading, error, product }, dispatch] = useReducer(reducer, {
+  let [{ loading, error, product }, dispatch] = useReducer(reducer, {
     loading: true,
     error: '',
     product: [],
@@ -58,7 +58,8 @@ function ProductScreen() {
   const addToBasketHandler = async () => {
     const existingItem = basket.basketItems.find((x) => x._id === product._id);
     const quantity = existingItem ? existingItem.quantity + 1 : 1;
-    const { data } = await axios.get(`/api/products/${product._id}`);
+    const { data } = await axios.get(`/api/products/${product.product._id}`);
+    product = product.product;
     if (data.countInStock < quantity) {
       window.alert('Sorry, this product is out of stock.');
       return;
@@ -74,13 +75,29 @@ function ProductScreen() {
     e.preventDefault();
     try {
       await axios.post(
-        `/api/products/rate/${product._id}`,
+        `/api/products/rate/${product.product._id}`,
         {
           rating,
         },
         { headers: { authorization: `Bearer ${userInfo.token}` } }
       );
       window.location.reload(false);
+    } catch (err) {
+      toast.error(getError(err));
+    }
+  };
+
+  const notifyUserHandler = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(
+        `/api/products/notify/${product.product._id}`,
+        {
+          product,
+        },
+        { headers: { authorization: `Bearer ${userInfo.token}` } }
+      );
+      toast.success('You will be notified when the product is available!');
     } catch (err) {
       toast.error(getError(err));
     }
@@ -96,28 +113,32 @@ function ProductScreen() {
         <Col md={6}>
           <img
             className="img-large"
-            src={product.image}
-            alt={product.name}
+            src={product.product.image}
+            alt={product.product.name}
           ></img>
         </Col>
         <Col md={3}>
           <ListGroup variant="flush">
             <ListGroup.Item>
               <Helmet>
-                <title>{product.name}</title>
+                <title>{product.product.name}</title>
               </Helmet>
               <h1>{product.name}</h1>
             </ListGroup.Item>
             <ListGroup.Item>
               <Rating
-                rating={product.rating}
-                numReviews={product.numReviews}
+                rating={product.product.rating}
+                numReviews={product.product.numReviews}
               ></Rating>
             </ListGroup.Item>
-            <ListGroup.Item>Price: {product.price}€</ListGroup.Item>
+            <ListGroup.Item>Price: {product.product.price}€</ListGroup.Item>
             <ListGroup.Item>
               Description:
-              <p>{product.description}</p>
+              <p>{product.product.description}</p>
+            </ListGroup.Item>
+            <ListGroup.Item>
+              Sold by:
+              <p>{product.user.name}</p>
             </ListGroup.Item>
             {userInfo && (
               <ListGroup.Item>
@@ -161,14 +182,14 @@ function ProductScreen() {
                 <ListGroup.Item>
                   <Row>
                     <Col>Price:</Col>
-                    <Col>{product.price}€</Col>
+                    <Col>{product.product.price}€</Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
                   <Row>
                     <Col>Status:</Col>
                     <Col>
-                      {product.countInStock > 0 ? (
+                      {product.product.countInStock > 0 ? (
                         <Badge bg="success">Available</Badge>
                       ) : (
                         <Badge bg="danger">Unavailable</Badge>
@@ -176,11 +197,19 @@ function ProductScreen() {
                     </Col>
                   </Row>
                 </ListGroup.Item>
-                {product.countInStock > 0 && (
+                {product.product.countInStock > 0 ? (
                   <ListGroup.Item>
                     <div className="d-grid">
                       <Button onClick={addToBasketHandler} variant="primary">
                         Add to basket
+                      </Button>
+                    </div>
+                  </ListGroup.Item>
+                ) : (
+                  <ListGroup.Item>
+                    <div className="d-grid">
+                      <Button onClick={notifyUserHandler} variant="primary">
+                        Notify when available
                       </Button>
                     </div>
                   </ListGroup.Item>

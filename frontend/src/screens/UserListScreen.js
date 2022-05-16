@@ -87,15 +87,15 @@ export default function UserListScreen() {
                 <td>{user._id}</td>
                 <td>{user.name}</td>
                 <td>{user.email}</td>
-                <td>TODO</td>
+                <td>{user.role}</td>
                 <td>
                   <Button>
                     <Link
-                      to={`/users/${user._id}`}
+                      to={`/users/role/${user._id}`}
                       style={{ textDecoration: 'none', color: '#FFFFFF' }}
                     >
                       <Card.Title style={{ fontSize: '16px' }}>
-                        User Info
+                        Change Role
                       </Card.Title>
                     </Link>
                   </Button>

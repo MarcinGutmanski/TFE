@@ -1,6 +1,7 @@
 import express from 'express';
 import User from '../models/userModel.js';
 import Order from '../models/orderModel.js';
+import Role from '../models/roleModel.js';
 import MemberForm from '../models/memberFormModel.js';
 import bcrypt from 'bcryptjs';
 import { generateToken } from '../utils.js';
@@ -15,11 +16,13 @@ userRouter.post(
     const user = await User.findOne({ email: req.body.email });
     if (user) {
       if (bcrypt.compareSync(req.body.password, user.password)) {
+        const role = await Role.findOne({ _id: user.role });
         res.send({
           _id: user._id,
           name: user.name,
           email: user.email,
           token: generateToken(user),
+          role: role.name,
         });
         return;
       }
@@ -31,10 +34,13 @@ userRouter.post(
 userRouter.post(
   '/signup',
   expressAsyncHandler(async (req, res) => {
+    const role = await Role.findOne({ name: 'Basic' });
+
     const newUser = new User({
       name: req.body.name,
       email: req.body.email,
       password: bcrypt.hashSync(req.body.password),
+      role: role._id,
     });
     const user = await newUser.save();
 
@@ -101,6 +107,15 @@ userRouter.get('/admin', async (req, res) => {
   }
 });
 
+userRouter.get('/roles', async (req, res) => {
+  const roles = await Role.find();
+  if (roles) {
+    res.send(roles);
+  } else {
+    res.status(404).send({ message: 'Roles not found.' });
+  }
+});
+
 userRouter.post('/addFromForm', async (req, res) => {
   const memberForm = await MemberForm.findById(req.body.id);
 
@@ -109,6 +124,11 @@ userRouter.post('/addFromForm', async (req, res) => {
   const updatedProductForm = await memberForm.save();
 
   const user = await User.findOne({ _id: memberForm.user });
+  const role = await Role.findOne({ name: 'Member' });
+
+  user.role = role._id;
+
+  const updatedUser = await user.save();
 
   const mailOptions = {
     from: 'creamates.info@gmail.com',
@@ -167,6 +187,29 @@ userRouter.post('/declineFromForm', async (req, res) => {
   });
 
   res.send(200);
+});
+
+userRouter.get('/:id', async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (user) {
+    res.send(user);
+  } else {
+    res.status(404).send({ message: 'User not found.' });
+  }
+});
+
+userRouter.post('/role/:id', async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (user) {
+    const role = await Role.findOne({ name: req.body.role });
+    if (user.role.toString() != role._id.toString()) {
+      user.role = role._id;
+      await user.save();
+    }
+    res.send(user);
+  } else {
+    res.status(404).send({ message: 'User not found.' });
+  }
 });
 
 userRouter.delete('/:id', async (req, res) => {
