@@ -1,6 +1,17 @@
 import bcrypt from 'bcryptjs';
 
 const data = {
+  roles: [
+    {
+      name: 'Admin',
+    },
+    {
+      name: 'Member',
+    },
+    {
+      name: 'Basic',
+    },
+  ],
   users: [
     {
       name: 'Marcin',
