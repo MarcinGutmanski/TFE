@@ -73,6 +73,7 @@ userRouter.post(
       name: user.name,
       email: user.email,
       token: generateToken(user),
+      role: role.name,
     });
   })
 );
@@ -94,6 +95,7 @@ userRouter.put(
         _id: updatedUser._id,
         name: updatedUser.name,
         email: updatedUser.email,
+        role: user.role,
         token: generateToken(updatedUser),
       });
     } else {

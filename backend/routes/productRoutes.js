@@ -126,25 +126,6 @@ productRouter.get('/admin', async (req, res) => {
   }
 });
 
-productRouter.post('/add', async (req, res) => {
-  console.log(req.body);
-  const newProduct = new Product({
-    name: req.body.name,
-    price: req.body.price,
-    countInStock: req.body.quantity,
-    description: req.body.description,
-    category: req.body.category,
-    rating: 0,
-    numReviews: 0,
-    image: '/images/image-not-found.jpg',
-  });
-  const product = await newProduct.save();
-
-  if (product) {
-    res.send(product);
-  }
-});
-
 productRouter.post('/addFromForm', async (req, res) => {
   const productForm = await ProductForm.findById(req.body.id);
 
@@ -241,8 +222,7 @@ productRouter.get('/:id', async (req, res) => {
   }
 });
 
-productRouter.post('/add', async (req, res) => {
-  console.log(req.body);
+productRouter.post('/add', isAuth, async (req, res) => {
   const newProduct = new Product({
     name: req.body.name,
     price: req.body.price,
@@ -252,6 +232,7 @@ productRouter.post('/add', async (req, res) => {
     rating: 0,
     numReviews: 0,
     image: '/images/image-not-found.jpg',
+    user: req.user._id,
   });
   const product = await newProduct.save();
 
@@ -311,6 +292,7 @@ productRouter.post('/modify/:id', async (req, res) => {
   const updatedProduct = await product.save();
 
   const user = await User.findOne({ _id: product.user });
+  console.log(user);
 
   const mailOptions = {
     from: 'creamates.info@gmail.com',

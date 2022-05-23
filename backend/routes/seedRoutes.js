@@ -8,6 +8,7 @@ import Order from '../models/orderModel.js';
 import Role from '../models/roleModel.js';
 import Notification from '../models/notificationModel.js';
 import Feedback from '../models/feedbackModel.js';
+import UserRating from '../models/userRatingModel.js';
 
 const seedRouter = express.Router();
 
@@ -18,6 +19,7 @@ seedRouter.get('/', async (req, res) => {
   await Role.remove({});
   await Notification.remove({});
   await Feedback.remove({});
+  await UserRating.remove({});
   const createdRoles = await Role.insertMany(data.roles);
   console.log(createdRoles);
   await Product.remove({});

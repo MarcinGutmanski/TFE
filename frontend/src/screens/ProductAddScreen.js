@@ -40,14 +40,16 @@ export default function ProductAddScreen() {
   useEffect(() => {
     const fecthCategories = async () => {
       try {
-        const { data } = await axios.get(`/api/products/categories`);
+        const { data } = await axios.get(`/api/products/categories`, {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        });
         setCategories(data);
       } catch (err) {
         toast.error(getError(err));
       }
     };
     fecthCategories();
-  }, []);
+  }, [userInfo]);
   return (
     <div className="container small-container">
       <Helmet>
