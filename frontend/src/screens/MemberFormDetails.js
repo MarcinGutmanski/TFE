@@ -40,7 +40,9 @@ export default function MemberFormDetails() {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
       try {
-        const result = await axios.get(`/api/forms/memberForm/${id}`);
+        const result = await axios.get(`/api/forms/memberForm/${id}`, {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        });
         console.log(result.data);
         dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
       } catch (err) {
@@ -48,7 +50,7 @@ export default function MemberFormDetails() {
       }
     };
     fetchData();
-  }, [id]);
+  }, [id, userInfo]);
 
   const submitHandler = async (e) => {
     e.preventDefault();

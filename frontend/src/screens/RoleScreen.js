@@ -38,7 +38,9 @@ export default function RoleScreen() {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const { data } = await axios.get(`/api/users/roles`);
+        const { data } = await axios.get(`/api/users/roles`, {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        });
         setRoles(data);
       } catch (err) {
         toast.error(getError(err));
@@ -46,7 +48,9 @@ export default function RoleScreen() {
     };
     const fetchUser = async () => {
       try {
-        const { data } = await axios.get(`/api/users/${id}`);
+        const { data } = await axios.get(`/api/users/${id}`, {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        });
         setUser(data);
       } catch (err) {
         toast.error(getError(err));
@@ -54,7 +58,7 @@ export default function RoleScreen() {
     };
     fetchUser();
     fetchRoles();
-  }, [id]);
+  }, [id, userInfo]);
 
   return (
     <Container className="small-container">

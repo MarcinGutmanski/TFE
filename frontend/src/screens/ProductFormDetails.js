@@ -32,22 +32,23 @@ export default function ProductFormDetails() {
     productForm: [],
   });
   const [feedback, setFeedback] = useState('');
+  const { state } = useContext(Store);
+  const { userInfo } = state;
 
   useEffect(() => {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
       try {
-        var result = await axios.get(`/api/forms/productForm/${id}`);
+        var result = await axios.get(`/api/forms/productForm/${id}`, {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        });
         dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
     };
     fetchData();
-  }, [id]);
-
-  const { state } = useContext(Store);
-  const { userInfo } = state;
+  }, [id, userInfo]);
 
   const submitHandler = async (e) => {
     e.preventDefault();

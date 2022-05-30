@@ -76,7 +76,7 @@ export default function ProductModifyScreen() {
   };
 
   useEffect(() => {
-    const fecthCategories = async () => {
+    const fetchCategories = async () => {
       try {
         const { data } = await axios.get(`/api/products/categories`);
         setCategories(data);
@@ -84,7 +84,7 @@ export default function ProductModifyScreen() {
         toast.error(getError(err));
       }
     };
-    fecthCategories();
+    fetchCategories();
   }, []);
 
   return loading ? (

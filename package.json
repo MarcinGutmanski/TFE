@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/MarcinGutmanski/TFE/issues"
   },
-  "homepage": "https://github.com/MarcinGutmanski/TFE#readme"
+  "homepage": "https://github.com/MarcinGutmanski/TFE#readme",
+  "dependencies": {
+    "generate-password": "^1.7.0"
+  }
 }

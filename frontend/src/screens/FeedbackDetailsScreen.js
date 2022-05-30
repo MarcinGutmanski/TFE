@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useContext, useEffect, useReducer } from 'react';
 import { useParams } from 'react-router-dom';
 import { getError } from '../utils.js';
 import axios from 'axios';
@@ -9,6 +9,7 @@ import MessageBox from '../components/MessageBox';
 import { Link } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
+import { Store } from '../Store';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -32,18 +33,23 @@ export default function FeedbackDetailsScreen() {
     feedback: [],
   });
 
+  const { state } = useContext(Store);
+  const { userInfo } = state;
+
   useEffect(() => {
     const fetchData = async () => {
       dispatch({ type: 'FETCH_REQUEST' });
       try {
-        const result = await axios.get(`/api/feedbacks/${id}`);
+        const result = await axios.get(`/api/feedbacks/${id}`, {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        });
         dispatch({ type: 'FETCH_SUCCESS', payload: result.data });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
     };
     fetchData();
-  }, [id]);
+  }, [id, userInfo]);
 
   return loading ? (
     <LoadingBox />

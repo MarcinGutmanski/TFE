@@ -35,8 +35,8 @@ export const isAuth = (req, res, next) => {
 export const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'creamates.info@gmail.com',
+    user: 'info.creamates@gmail.com',
     pass: 'CreamatesAdmin3584',
   },
-  from: 'creamates.info@gmail.com',
+  from: 'Creamates',
 });

@@ -117,7 +117,7 @@ productRouter.get(
   })
 );
 
-productRouter.get('/admin', async (req, res) => {
+productRouter.get('/admin', isAuth, async (req, res) => {
   const products = await Product.find({ isDeleted: false });
   if (products) {
     res.send(products);
@@ -126,7 +126,7 @@ productRouter.get('/admin', async (req, res) => {
   }
 });
 
-productRouter.post('/addFromForm', async (req, res) => {
+productRouter.post('/addFromForm', isAuth, async (req, res) => {
   const productForm = await ProductForm.findById(req.body.id);
 
   const newProduct = new Product({
@@ -149,7 +149,7 @@ productRouter.post('/addFromForm', async (req, res) => {
   const user = await User.findOne({ _id: productForm.user });
 
   const mailOptions = {
-    from: 'creamates.info@gmail.com',
+    from: 'Creamates',
     to: user.email,
     subject: 'Your product has been added!',
     html:
@@ -176,7 +176,7 @@ productRouter.post('/addFromForm', async (req, res) => {
   }
 });
 
-productRouter.post('/declineFromForm', async (req, res) => {
+productRouter.post('/declineFromForm', isAuth, async (req, res) => {
   const productForm = await ProductForm.findById(req.body.id);
 
   const user = await User.findOne({ _id: productForm.user });
@@ -187,7 +187,7 @@ productRouter.post('/declineFromForm', async (req, res) => {
   }
 
   const mailOptions = {
-    from: 'creamates.info@gmail.com',
+    from: 'Creamates',
     to: user.email,
     subject: 'Your product has been declined',
     html:
@@ -245,7 +245,7 @@ async function notifyUser(notifId, userId, productId) {
   const user = await User.findOne({ _id: userId });
   const product = await Product.findOne({ _id: productId });
   const mailOptions = {
-    from: 'creamates.info@gmail.com',
+    from: 'Creamates',
     to: user.email,
     subject: 'Product available!',
     html:
@@ -270,7 +270,7 @@ async function notifyUser(notifId, userId, productId) {
   await Notification.deleteOne({ _id: notifId });
 }
 
-productRouter.post('/modify/:id', async (req, res) => {
+productRouter.post('/modify/:id', isAuth, async (req, res) => {
   let product = await Product.findOne({ _id: req.params.id });
   console.log(product);
 
@@ -295,7 +295,7 @@ productRouter.post('/modify/:id', async (req, res) => {
   console.log(user);
 
   const mailOptions = {
-    from: 'creamates.info@gmail.com',
+    from: 'Creamates',
     to: user.email,
     subject: 'Your product has been updated!',
     html:
@@ -330,7 +330,7 @@ productRouter.post('/delete/:id', async (req, res) => {
   const user = await User.findOne({ _id: product.user });
 
   const mailOptions = {
-    from: 'creamates.info@gmail.com',
+    from: 'Creamates',
     to: user.email,
     subject: 'Your product has been deleted',
     html:

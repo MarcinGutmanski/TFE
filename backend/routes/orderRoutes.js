@@ -38,7 +38,7 @@ orderRouter.post(
     const order = await newOrder.save();
 
     const mailOptions = {
-      from: 'creamates.info@gmail.com',
+      from: 'Creamates',
       to: user.email,
       subject: 'Thank you for your purchase!',
       html:
@@ -76,7 +76,7 @@ orderRouter.get(
   })
 );
 
-orderRouter.get('/admin', async (req, res) => {
+orderRouter.get('/admin', isAuth, async (req, res) => {
   const orders = await Order.find({ isDeleted: false });
   if (orders) {
     res.send(orders);
@@ -156,7 +156,7 @@ orderRouter.put(
       const user = await User.findOne({ _id: order.user });
 
       const mailOptions = {
-        from: 'creamates.info@gmail.com',
+        from: 'Creamates',
         to: user.email,
         subject: 'Your order has been sent!',
         html:

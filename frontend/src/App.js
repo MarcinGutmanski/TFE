@@ -26,6 +26,7 @@ import RoleScreen from './screens/RoleScreen';
 import FeedbackScreen from './screens/FeedbackScreen';
 import FeedbackListScreen from './screens/FeedbackListScreen';
 import FeedbackDetailsScreen from './screens/FeedbackDetailsScreen';
+import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import MemberRoute from './components/MemberRoute';
@@ -145,6 +146,7 @@ function App() {
               <Route path="/product/:name" element={<ProductScreen />} />
               <Route path="/basket" element={<BasketScreen />} />
               <Route path="/signin" element={<SignInScreen />} />
+              <Route path="/reset" element={<ResetPasswordScreen />} />
               <Route path="/signup" element={<SignUpScreen />} />
               <Route path="/shipping" element={<ShippingAddressScreen />} />
               <Route path="/payment" element={<PaymentMethodScreen />} />

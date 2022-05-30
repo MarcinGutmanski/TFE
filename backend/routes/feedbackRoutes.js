@@ -4,7 +4,7 @@ import { isAuth } from '../utils.js';
 import expressAsyncHandler from 'express-async-handler';
 
 const feedbackRouter = express.Router();
-feedbackRouter.get('/admin', async (req, res) => {
+feedbackRouter.get('/admin', isAuth, async (req, res) => {
   const feedbacks = await Feedback.find();
   if (feedbacks) {
     res.send(feedbacks);
@@ -13,7 +13,7 @@ feedbackRouter.get('/admin', async (req, res) => {
   }
 });
 
-feedbackRouter.get('/:id', async (req, res) => {
+feedbackRouter.get('/:id', isAuth, async (req, res) => {
   const feedback = await Feedback.findOne({ _id: req.params.id });
   if (feedback) {
     res.send(feedback);

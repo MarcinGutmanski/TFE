@@ -8,6 +8,7 @@ import bcrypt from 'bcryptjs';
 import { generateToken } from '../utils.js';
 import expressAsyncHandler from 'express-async-handler';
 import { isAuth, transporter } from '../utils.js';
+import generator from 'generate-password';
 
 const userRouter = express.Router();
 
@@ -49,7 +50,7 @@ userRouter.post(
     const user = await newUser.save();
 
     const mailOptions = {
-      from: 'creamates.info@gmail.com',
+      from: 'Creamates',
       to: newUser.email,
       subject: 'Welcome to Creamates!',
       html:
@@ -104,8 +105,11 @@ userRouter.put(
   })
 );
 
-userRouter.get('/admin', async (req, res) => {
-  const users = await User.find({ isDeleted: false });
+userRouter.get('/admin', isAuth, async (req, res) => {
+  const users = await User.find({
+    isDeleted: false,
+    email: { $ne: 'guma091196@gmail.com' },
+  });
   if (users) {
     res.send(users);
   } else {
@@ -113,7 +117,7 @@ userRouter.get('/admin', async (req, res) => {
   }
 });
 
-userRouter.get('/roles', async (req, res) => {
+userRouter.get('/roles', isAuth, async (req, res) => {
   const roles = await Role.find();
   if (roles) {
     res.send(roles);
@@ -122,7 +126,7 @@ userRouter.get('/roles', async (req, res) => {
   }
 });
 
-userRouter.post('/addFromForm', async (req, res) => {
+userRouter.post('/addFromForm', isAuth, async (req, res) => {
   const memberForm = await MemberForm.findById(req.body.id);
 
   memberForm.isAccepted = true;
@@ -137,7 +141,7 @@ userRouter.post('/addFromForm', async (req, res) => {
   const updatedUser = await user.save();
 
   const mailOptions = {
-    from: 'creamates.info@gmail.com',
+    from: 'Creamates',
     to: user.email,
     subject: 'Membership accepted!',
     html:
@@ -160,7 +164,7 @@ userRouter.post('/addFromForm', async (req, res) => {
   res.send(200);
 });
 
-userRouter.post('/declineFromForm', async (req, res) => {
+userRouter.post('/declineFromForm', isAuth, async (req, res) => {
   const memberForm = await MemberForm.findById(req.body.id);
 
   const user = await User.findOne({ _id: memberForm.user });
@@ -171,7 +175,7 @@ userRouter.post('/declineFromForm', async (req, res) => {
   }
 
   const mailOptions = {
-    from: 'creamates.info@gmail.com',
+    from: 'Creamates',
     to: user.email,
     subject: 'Membership declined',
     html:
@@ -195,7 +199,53 @@ userRouter.post('/declineFromForm', async (req, res) => {
   res.send(200);
 });
 
-userRouter.get('/:id', async (req, res) => {
+userRouter.post(
+  '/reset',
+  expressAsyncHandler(async (req, res) => {
+    const user = await User.findOne({
+      name: req.body.name,
+      email: req.body.email,
+    });
+    if (user) {
+      let newPassword = generator.generate({
+        length: 10,
+        numbers: true,
+      });
+
+      user.password = bcrypt.hashSync(newPassword, 8);
+
+      const updatedUser = await user.save();
+
+      const mailOptions = {
+        from: 'Creamates',
+        to: user.email,
+        subject: 'New password',
+        html:
+          'Hello ' +
+          user.name +
+          ', <br/><br/>Here is your new password : ' +
+          newPassword +
+          '<br/><br/> You can now log in to our <a href="' +
+          'http://localhost:3000/signin' +
+          '">website</a><br/><br/>If you are not the one that asked for this change, please consider changing your email address.<br/><br/>Kind regards, <br/> Créamates',
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
+
+      res.sendStatus(200);
+    } else {
+      res.status(404).send({ message: 'User not found.' });
+    }
+  })
+);
+
+userRouter.get('/:id', isAuth, async (req, res) => {
   const user = await User.findById(req.params.id);
   if (user) {
     res.send(user);
@@ -204,7 +254,7 @@ userRouter.get('/:id', async (req, res) => {
   }
 });
 
-userRouter.post('/role/:id', async (req, res) => {
+userRouter.post('/role/:id', isAuth, async (req, res) => {
   const user = await User.findById(req.params.id);
   if (user) {
     const role = await Role.findOne({ name: req.body.role });
@@ -241,6 +291,7 @@ userRouter.post('/delete/:id', async (req, res) => {
 
 userRouter.put(
   '/profile/:id',
+  isAuth,
   expressAsyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id);
     if (user) {

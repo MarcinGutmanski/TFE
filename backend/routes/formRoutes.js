@@ -5,7 +5,7 @@ import { isAuth } from '../utils.js';
 import expressAsyncHandler from 'express-async-handler';
 
 const formRouter = express.Router();
-formRouter.get('/admin/member', async (req, res) => {
+formRouter.get('/admin/member', isAuth, async (req, res) => {
   const memberForms = await MemberForm.find({ isAccepted: false });
   if (memberForms) {
     res.send(memberForms);
@@ -14,7 +14,7 @@ formRouter.get('/admin/member', async (req, res) => {
   }
 });
 
-formRouter.get('/admin/product', async (req, res) => {
+formRouter.get('/admin/product', isAuth, async (req, res) => {
   const productForms = await ProductForm.find({ isAccepted: false });
   if (productForms) {
     res.send(productForms);
@@ -72,7 +72,7 @@ formRouter.post(
   })
 );
 
-formRouter.get('/memberForm/:id', async (req, res) => {
+formRouter.get('/memberForm/:id', isAuth, async (req, res) => {
   const memberForm = await MemberForm.findById(req.params.id);
   if (memberForm) {
     res.send(memberForm);
@@ -81,7 +81,7 @@ formRouter.get('/memberForm/:id', async (req, res) => {
   }
 });
 
-formRouter.get('/productForm/:id', async (req, res) => {
+formRouter.get('/productForm/:id', isAuth, async (req, res) => {
   const productForm = await ProductForm.findById(req.params.id);
   if (productForm) {
     res.send(productForm);

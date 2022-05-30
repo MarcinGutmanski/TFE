@@ -58,7 +58,7 @@ export default function OrderScreen() {
       .create({
         purchase_units: [
           {
-            amount: { value: order.totalPrice },
+            amount: { value: order.totalPrice, currency_code: 'EUR' },
           },
         ],
       })
@@ -120,10 +120,13 @@ export default function OrderScreen() {
           type: 'resetOptions',
           value: {
             'client-id': clientId,
-            currency: 'EURO',
+            currency_code: 'EUR',
           },
         });
-        paypalDispatch({ type: 'setLoadingStatus', value: 'pending' });
+        paypalDispatch({
+          type: 'setLoadingStatus',
+          value: 'pending',
+        });
       };
       loadPayPalScript();
     }

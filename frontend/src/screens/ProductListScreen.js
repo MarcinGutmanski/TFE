@@ -51,7 +51,9 @@ export default function ProductListScreen() {
   }, [userInfo]);
 
   const deleteProductHandler = async (e) => {
+    e.preventDefault();
     try {
+      console.log(userInfo.token);
       await axios.post(`/api/products/delete/${e.target.value}`, {
         headers: { authorization: `Bearer ${userInfo.token}` },
       });
